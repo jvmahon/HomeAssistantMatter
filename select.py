@@ -41,12 +41,25 @@ class MatterModeSelect(MatterEntity, SelectEntity):
     def _update_from_device(self) -> None:
         """Update from device."""
         '''This is from switch and is a placeholder that needs to be updated'''
-        self._attr_is_on = self.get_matter_attribute_value(
-            self._entity_info.primary_attribute
+        currentmode = self.get_matter_attribute_value(
+            clusters.ModeSelect.Attributes.CurrentMode
+        )
+        self._currentmode = currentmode
+        LOGGER.debug(
+            "Got currentmode %s for %s",
+            currentmode,
+            self.entity_id,
         )
         
     @property
     def options(self)->list[str]:
+        supportedmodes = self.get_matter_attribute_value(
+            clusters.ModeSelect.Attributes.SupportedModes
+        )
+        LOGGER.debug(
+            "Got supported modes %s",
+            supportedmodes
+        )
         return ["one", "two", "three"]
 
     @property
