@@ -34,6 +34,17 @@ async def async_setup_entry(
 class MatterModeSelect(MatterEntity, SelectEntity):
     """Representation of a Matter select."""
 
+    async def async_select_option(self, option: str) -> None:
+        """Change the device mode"""
+        
+    @callback
+    def _update_from_device(self) -> None:
+        """Update from device."""
+        '''This is from switch and is a placeholder that needs to be updated'''
+        self._attr_is_on = self.get_matter_attribute_value(
+            self._entity_info.primary_attribute
+        )
+        
     @property
     def options(self)->list[str]:
         return ["one", "two", "three"]
@@ -41,8 +52,6 @@ class MatterModeSelect(MatterEntity, SelectEntity):
     @property
     def current_option(self) -> str:
         return "two"
-
-    async def async_select_option(self, option: str) -> None:
 
 
 # Discovery schema(s) to map Matter Attributes to HA entities
