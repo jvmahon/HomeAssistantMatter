@@ -34,22 +34,15 @@ async def async_setup_entry(
 class MatterModeSelect(MatterEntity, SelectEntity):
     """Representation of a Matter select."""
 
+    @property
+    def options(self)->list[str]:
+        return ["one", "two", "three"]
+
+    @property
+    def current_option(self) -> str:
+        return "two"
+
     async def async_select_option(self, option: str) -> None:
-        """Select a new mode."""
-        # Select using something like
-        # newMode = ModeSelect.keys()[ModeSelect.SupportedModes.values().index(option)]
-        newMode = int 0x01
-        await self.matter_client.send_device_command(
-            node_id=self._endpoint.node.node_id,
-            endpoint_id=self._endpoint.endpoint_id,
-            command=clusters.ModeSelect.Commands.ChangeToMode(newMode),
-        )
-
-
-    @callback
-    def _update_from_device(self) -> None:
-        """Update from device."""
-
 
 
 # Discovery schema(s) to map Matter Attributes to HA entities
