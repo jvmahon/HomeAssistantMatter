@@ -20,7 +20,6 @@ from .entity import MatterEntity
 from .helpers import get_matter
 from .models import MatterDiscoverySchema
 
-
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -33,9 +32,26 @@ async def async_setup_entry(
 
 class MatterModeSelect(MatterEntity, SelectEntity):
     """Representation of a Matter select."""
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the entity."""
+        super().__init__(*args, **kwargs)
+        # fill the event types based on the features the switch supports
+        self._attr_name = self.get_matter_attribute_value( clusters.ModeSelect.Attributes.Description )
+        
 
     async def async_select_option(self, option: str) -> None:
         """Change the device mode"""
+        supportedmodes = self.get_matter_attribute_value(
+            clusters.ModeSelect.Attributes.SupportedModes
+        )
+        for mode in supportedmodes:
+            if option == mode.label:  newselectmode = mode.mode
+            
+        await self.matter_client.send_device_command(
+            node_id=self._endpoint.node.node_id,
+            endpoint_id=self._endpoint.endpoint_id,
+            command=clusters.ModeSelect.Commands.ChangeToMode(newMode=newselectmode),
+        )
         
     @callback
     def _update_from_device(self) -> None:
@@ -44,27 +60,27 @@ class MatterModeSelect(MatterEntity, SelectEntity):
         currentmode = self.get_matter_attribute_value(
             clusters.ModeSelect.Attributes.CurrentMode
         )
-        self._currentmode = currentmode
-        LOGGER.debug(
-            "Got currentmode %s for %s",
-            currentmode,
-            self.entity_id,
-        )
         
     @property
     def options(self)->list[str]:
         supportedmodes = self.get_matter_attribute_value(
             clusters.ModeSelect.Attributes.SupportedModes
         )
-        LOGGER.debug(
-            "Got supported modes %s",
-            supportedmodes
-        )
-        return ["one", "two", "three"]
+        supportedmodelist = []
+        for option in supportedmodes:
+            supportedmodelist.append(option.label)
+        return supportedmodelist
 
     @property
     def current_option(self) -> str:
-        return "two"
+        currentmode = self.get_matter_attribute_value(
+            clusters.ModeSelect.Attributes.CurrentMode
+        )
+        supportedmodes = self.get_matter_attribute_value(
+            clusters.ModeSelect.Attributes.SupportedModes
+        )
+        for mode in supportedmodes:
+            if currentmode == mode.mode:  return(mode.label)
 
 
 # Discovery schema(s) to map Matter Attributes to HA entities
