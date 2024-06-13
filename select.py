@@ -12,7 +12,10 @@ from homeassistant.components.select import (
     SelectEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import (
+    Platform, 
+    EntityCategory 
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -88,7 +91,9 @@ DISCOVERY_SCHEMAS = [
     MatterDiscoverySchema(
         platform=Platform.SELECT,
         entity_description=SelectEntityDescription(
-            key="MatterModeSelect", name=None
+            key="MatterModeSelect", 
+            entity_category=EntityCategory.CONFIG,
+            name=None
         ),
         entity_class=MatterModeSelect,
         required_attributes=(
