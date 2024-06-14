@@ -378,6 +378,8 @@ class MatterLight(MatterEntity, LightEntity):
 
         if self._supports_color_temperature:
             self._attr_color_temp = self._get_color_temperature()
+            self._attr_min_mireds = self.get_matter_attribute_value( clusters.ColorControl.Attributes.ColorTempPhysicalMinMireds )
+            self._attr_max_mireds = self.get_matter_attribute_value( clusters.ColorControl.Attributes.ColorTempPhysicalMaxMireds )
 
         if self._supports_color:
             self._attr_color_mode = color_mode = self._get_color_mode()
