@@ -1,15 +1,13 @@
 """Matter Number Inputs."""
 
 from __future__ import annotations
-
+from typing import Any
 from dataclasses import dataclass
-
 from chip.clusters import Objects as clusters
-from chip.clusters.Types import Nullable, NullValue
+from chip.clusters.Types import NullValue
 from matter_server.common.helpers.util import create_attribute_path_from_attribute
 
 from homeassistant.components.number import (
-    NumberDeviceClass,
     NumberEntity,
     NumberEntityDescription,
     NumberMode,
@@ -48,17 +46,12 @@ class MatterNumberEntityDescription(NumberEntityDescription, MatterEntityDescrip
 
 
 class MatterNumber(MatterEntity, NumberEntity):
-    """Representation of a Matter Number INput."""
-    """Representation of a Matter select."""
+    """Representation of a Matter Attribute as a Number entity."""
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the entity."""
         super().__init__(*args, **kwargs)
-        # fill the event types based on the features the switch supports
         self._attr_name =   self.entity_description.name + " EP " + str(self._endpoint.endpoint_id)
-
-        
-    # entity_description: MatterNumberEntityDescription
-    
+  
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value"""
         matter_attribute = ( self._entity_info.primary_attribute )
